@@ -21,8 +21,9 @@ llm = OpenAI(openai_api_key=openai_key, model_name="gpt-4-turbo-preview")
 
 embeddings = OpenAIEmbeddings(openai_api_key=openai_key)
 
-
+# Loading knowledge base
 loader = DirectoryLoader("data/", glob="**/*.txt")
+
 
 documents = loader.load()
 text_splitter = RecursiveCharacterTextSplitter(
