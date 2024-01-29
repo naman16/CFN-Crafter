@@ -1,27 +1,28 @@
-from langchain.llms import OpenAI
-from langchain.embeddings import OpenAIEmbeddings
-from langchain.vectorstores import FAISS
+# importing necessary packages
+
+from langchain_openai import OpenAI
+from langchain_openai import OpenAIEmbeddings
+from langchain_community.vectorstores import FAISS
+from langchain_community.document_loaders import TextLoader, DirectoryLoader
 from langchain.indexes.vectorstore import VectorStoreIndexWrapper
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.text_splitter import CharacterTextSplitter
-from langchain_community.document_loaders import TextLoader
-from langchain.chains import ConversationChain
+from langchain.text_splitter import RecursiveCharacterTextSplitter, CharacterTextSplitter
+from langchain.chains import ConversationChain, ConversationalRetrievalChain
+from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT
 from langchain.memory import ConversationBufferMemory
 from langchain.prompts import PromptTemplate
-from langchain.chains import ConversationChain
-from langchain.chains import ConversationalRetrievalChain
-from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT
+import streamlit as st 
 import numpy as np
-from langchain.document_loaders import TextLoader
 
-openai_key = ''
+# provide OpenAI API key
+openai_key = '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'
 
-llm = OpenAI(openai_api_key=openai_key)
+# Setting up OpenAI LLM model
+llm = OpenAI(openai_api_key=openai_key, model_name="gpt-4-turbo-preview")
 
 embeddings = OpenAIEmbeddings(openai_api_key=openai_key)
 
 
-loader = TextLoader("/Users/NamanSogani/Desktop/TerraformGPT/gpt-repository-loader/")
+loader = DirectoryLoader("data/", glob="**/*.txt")
 
 documents = loader.load()
 text_splitter = RecursiveCharacterTextSplitter(
@@ -29,6 +30,7 @@ text_splitter = RecursiveCharacterTextSplitter(
     chunk_overlap  = 100,
 )
 docs = text_splitter.split_documents(documents)
+print (docs)
 
 vectorstore_faiss = FAISS.from_documents(
     docs,
@@ -36,3 +38,4 @@ vectorstore_faiss = FAISS.from_documents(
 )
 
 wrapper_store_faiss = VectorStoreIndexWrapper(vectorstore=vectorstore_faiss)
+print (wrapper_store_faiss)
