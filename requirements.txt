@@ -6,3 +6,6 @@ langchain-openai
 tiktoken
 unstructured
 streamlit
+streamlit_chat
+random
+time
