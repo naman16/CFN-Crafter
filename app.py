@@ -1,6 +1,6 @@
 import time
 import streamlit as st
-from utils import load_chain
+from index import conversational_chain
 
 # Custom image for the app icon and the assistant's avatar
 company_logo = 'https://blendle.com/img/packaging/android-touch-icon-196x196.png'
@@ -13,13 +13,13 @@ st.set_page_config(
 
 # Initialize LLM chain in session_state
 if 'chain' not in st.session_state:
-    st.session_state['chain']= load_chain()
+    st.session_state['chain']= conversational_chain()
 
 # Initialize chat history
 if 'messages' not in st.session_state:
     # Start with first message from assistant
     st.session_state['messages'] = [{"role": "assistant", 
-                                  "content": "Hi human! I am Blendle's smart AI. How can I help you today?"}]
+                                  "content": "Hi human, I am TerraformAWS AI! Which AWS service can I help you with today?"}]
 
 # Display chat messages from history on app rerun
 # Custom avatar for the assistant, default avatar for user

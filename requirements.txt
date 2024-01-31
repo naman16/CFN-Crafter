@@ -1,8 +1,8 @@
 langchain
 faiss-cpu
 openai
-langchain-community
-langchain-openai
+langchain_community
+langchain_openai
 tiktoken
 unstructured
 streamlit
