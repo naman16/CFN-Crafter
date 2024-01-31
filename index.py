@@ -1,4 +1,5 @@
 # importing necessary packages
+
 from langchain_openai import OpenAI, ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -9,72 +10,42 @@ from langchain.chains import ConversationChain, ConversationalRetrievalChain
 from langchain.chains.question_answering import load_qa_chain
 from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
-from langchain.prompts import PromptTemplate
-from langchain.prompts import SystemMessagePromptTemplate, HumanMessagePromptTemplate, ChatPromptTemplate,MessagesPlaceholder
-from streamlit_chat import message
-from langchain.schema import AIMessage, HumanMessage, format_document
-import streamlit as st
-import numpy as np
-import random
-import time
+from langchain.prompts import PromptTemplate, SystemMessagePromptTemplate
 
-# provide OpenAI API key
-openai_key = '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'
-# Setting up OpenAI LLM model
-llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4-turbo-preview")
-embeddings = OpenAIEmbeddings(openai_api_key=openai_key)
 
-system_message_template = SystemMessagePromptTemplate.from_template(template="""
-You are a cloud engineer that is an expert in Terraform for AWS and you are able to write full blown, production ready Terraform modules based on user requirements. 
-If the answer is not in the context say "Sorry, I don't know, as the answer was not found in the context."
-""")
+'''
+The below function initializes and configures a conversational retrieval chain for
+answering user questions.
+'''
+def conversational_chain():
+    # load OpenAI API key
+    openai_key = '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'
+    # load up OpenAI Chat model and embeddings
+    llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4-turbo-preview")
+    embeddings = OpenAIEmbeddings(openai_api_key=openai_key)
+    
+    # Load the local FAISS index as a retriever
+    vector_store = FAISS.load_local("local_index", embeddings)
+    retriever = vector_store.as_retriever(search_kwargs={"k": 5})
+    
+    # Enable conversational memory to enable chat functionality 
+    memory = ConversationBufferWindowMemory(k=3,memory_key="chat_history")
 
-human_message_template = HumanMessagePromptTemplate.from_template(template="{input}")
+    # Create the chain
+    chain = ConversationalRetrievalChain.from_llm(llm=llm, 
+                                                  retriever=retriever, 
+                                                  memory=memory, 
+                                                  get_chat_history=lambda h : h
+                                                  )
+    system_message_prompt_template = """
+    You are an AI assistant for answering questions about the Blendle Employee Handbook.
+    You are given the following extracted parts of a long document and a question. Provide a conversational answer.
+    If you don't know the answer, just say 'Sorry, I don't know... 😔'.
+    Don't try to make up an answer.
+    If the question is not about the Blendle Employee Handbook, politely inform them that you are tuned to only answer questions about the Blendle Employee Handbook.
 
-# Method to load docs / knowledge base and split into smaller chunks
-def load_and_split_docs():
-    loader = DirectoryLoader("data/", glob="output1.txt")
-    documents = loader.load()
-    text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size = 1000,
-        chunk_overlap  = 200,
-    )
-    docs = text_splitter.split_documents(documents)
-    return docs
-
-# Method to store chunks into a vectore store (FAISS)
-def creat_and_store_vector_embeddings():
-    vectorstore_faiss = FAISS.from_documents(
-        docs,
-        embeddings,
-    )
-    vectorstore_faiss.save_local("local_index")
-    return vectorstore_faiss
-
-# Condense the chat history and follow-up question into a standalone question
-def conversational_retrieval_prompts_template():
-    _template = """{chat_history}
-
-Answer only with the new question.
-How would you ask the question considering the previous conversation: {question}
-Question:"""
-    CONVO_QUESTION_PROMPT = PromptTemplate.from_template(_template)
-    return CONVO_QUESTION_PROMPT
-
-if __name__ == "__main__":
-    docs = load_and_split_docs()
-    vectorstore_faiss = creat_and_store_vector_embeddings()
-    wrapper_store_faiss = VectorStoreIndexWrapper(vectorstore=vectorstore_faiss)
-    memory_chain = ConversationBufferMemory(memory_key="chat_history", input_key="question", return_messages=True)
-    chat_history=[]
-    qa = ConversationalRetrievalChain.from_llm(
-        llm=llm,
-        retriever=vectorstore_faiss.as_retriever(),
-        memory=memory_chain,
-        condense_question_prompt=conversational_retrieval_prompts_template(),
-        chain_type='map_reduce'
-    )
-    prompt_template=ChatPromptTemplate.from_messages([system_message_template, MessagesPlaceholder(variable_name="history"), human_message_template])
-    qa.combine_docs_chain.llm_chain.prompt = PromptTemplate.from_template(prompt_template)
-    qa.predict(input="How to fix my car?")
+    {context}
+    Question: {question}
+    Helpful Answer:
+    """
     
