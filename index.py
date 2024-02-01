@@ -9,7 +9,6 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter, CharacterTex
 from langchain.chains import ConversationChain, ConversationalRetrievalChain
 from langchain.chains.question_answering import load_qa_chain
 from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT
-from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate, SystemMessagePromptTemplate
 from dotenv import load_dotenv
 
@@ -28,16 +27,13 @@ def conversational_chain():
     
     # Load the local FAISS index as a retriever
     vector_store = FAISS.load_local("local_index", embeddings)
-    retriever = vector_store.as_retriever(search_kwargs={"k": 5})
-    
-    # Enable conversational memory to enable chat functionality 
-    memory = ConversationBufferWindowMemory(k=3,memory_key="chat_history")
-
+    retriever = vector_store.as_retriever(search_kwargs={"k": 10})
     # Create the chain
-    chain = ConversationalRetrievalChain.from_llm(llm=llm, 
+    chain = ConversationalRetrievalChain.from_llm(llm=llm,
                                                   retriever=retriever, 
-                                                  memory=memory, 
-                                                  get_chat_history=lambda h : h
+                                                  chain_type="map_reduce",
+                                                  verbose=True,
+                                                  return_source_documents=True
                                                   )
     system_message_prompt_template = """
     You are a security-minded cloud engineer that is an expert in writing AWS CloudFormation templates:
