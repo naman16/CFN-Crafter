@@ -19,7 +19,7 @@ if 'chain' not in st.session_state:
 if 'messages' not in st.session_state:
     # Start with first message from assistant
     st.session_state['messages'] = [{"role": "assistant", 
-                                  "content": "Hi human, I am TerraformAWS AI! Which AWS service can I help you with today?"}]
+                                  "content": "Hi human, I am CFN Crafter AI, a security-minded cloud engineer that is an expert in writing AWS CloudFormation templates"}]
 
 # Display chat messages from history on app rerun
 # Custom avatar for the assistant, default avatar for user
