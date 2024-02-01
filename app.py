@@ -3,12 +3,12 @@ import streamlit as st
 from index import conversational_chain
 
 # Custom image for the app icon and the assistant's avatar
-terraform_aws_logo = 'CFNCrafter.png'
+cfn_crafter_logo = 'CFNCrafter.png'
 
 # Configure streamlit page
 st.set_page_config(
     page_title="Your CFN Crafter AI Chatbot",
-    page_icon=terraform_aws_logo
+    page_icon=cfn_crafter_logo
 )
 
 # Initialize LLM chain in session_state
@@ -25,7 +25,7 @@ if 'messages' not in st.session_state:
 # Custom avatar for the assistant, default avatar for user
 for message in st.session_state.messages:
     if message["role"] == 'assistant':
-        with st.chat_message(message["role"], avatar=terraform_aws_logo):
+        with st.chat_message(message["role"], avatar=cfn_crafter_logo):
             st.markdown(message["content"])
     else:
         with st.chat_message(message["role"]):
@@ -39,7 +39,7 @@ if query := st.chat_input("Ask me anything"):
     with st.chat_message("user"):
         st.markdown(query)
 
-    with st.chat_message("assistant", avatar=terraform_aws_logo):
+    with st.chat_message("assistant", avatar=cfn_crafter_logo):
         message_placeholder = st.empty()
         # Send user's question to our chain
         result = st.session_state['chain']({"question": query})
