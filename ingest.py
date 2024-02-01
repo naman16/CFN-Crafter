@@ -1,4 +1,5 @@
 # importing necessary packages
+import os
 from langchain_openai import OpenAI, ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -17,6 +18,11 @@ import xml.etree.ElementTree as ET
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
+from dotenv import load_dotenv
+
+# load OpenAI API key
+load_dotenv() 
+openai_key = os.getenv("OPEN_AI_KEY")
 
 # Setup Chrome Driver, may need to change based on system
 service = Service("/usr/bin/chromedriver")
@@ -25,9 +31,6 @@ options.add_argument("--headless")
 options.add_argument("--no-sandbox")
 driver = webdriver.Chrome(service=service, options=options)
 
-
-# load OpenAI API key
-openai_key = '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'
 # load up OpenAI Chat model and embeddings
 llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4-turbo-preview")
 embeddings = OpenAIEmbeddings(openai_api_key=openai_key)

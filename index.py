@@ -1,5 +1,5 @@
 # importing necessary packages
-
+import os
 from langchain_openai import OpenAI, ChatOpenAI
 from langchain_openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
@@ -11,15 +11,17 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT
 from langchain.memory import ConversationBufferMemory, ConversationBufferWindowMemory
 from langchain.prompts import PromptTemplate, SystemMessagePromptTemplate
+from dotenv import load_dotenv
 
+# load OpenAI API key
+load_dotenv() 
+openai_key = os.getenv("OPEN_AI_KEY")
 
 '''
 The below function initializes and configures a conversational retrieval chain for
 answering user questions.
 '''
 def conversational_chain():
-    # load OpenAI API key
-    openai_key = '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'
     # load up OpenAI Chat model and embeddings
     llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4-turbo-preview")
     embeddings = OpenAIEmbeddings(openai_api_key=openai_key)

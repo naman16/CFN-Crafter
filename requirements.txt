@@ -13,3 +13,4 @@ lxml
 beautifulsoup4
 bs4
 selenium
+python-dotenv
