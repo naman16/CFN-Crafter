@@ -11,6 +11,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain.chains.conversational_retrieval.prompts import CONDENSE_QUESTION_PROMPT
 from langchain.prompts import PromptTemplate, SystemMessagePromptTemplate
 from dotenv import load_dotenv
+from langchain.memory import ConversationBufferWindowMemory
 
 # load OpenAI API key
 load_dotenv() 
@@ -24,17 +25,21 @@ def conversational_chain():
     # load up OpenAI Chat model and embeddings
     llm = ChatOpenAI(openai_api_key=openai_key, model_name="gpt-4-turbo-preview")
     embeddings = OpenAIEmbeddings(openai_api_key=openai_key)
-    
+    # Create memory 'chat_history' 
+    memory = ConversationBufferWindowMemory(k=3,memory_key="chat_history")
     # Load the local FAISS index as a retriever
     vector_store = FAISS.load_local("local_index", embeddings)
-    retriever = vector_store.as_retriever(search_kwargs={"k": 10})
+    retriever = vector_store.as_retriever(search_kwargs={"k": 3})
+    #retrieved_docs = retriever.get_relevant_documents("can you create cloudformation for rds in YAML")
+    #print (retrieved_docs)
     # Create the chain
-    chain = ConversationalRetrievalChain.from_llm(llm=llm,
+    chain = ConversationalRetrievalChain.from_llm(llm, 
                                                   retriever=retriever, 
-                                                  chain_type="map_reduce",
-                                                  verbose=True,
-                                                  return_source_documents=True
+                                                  memory=memory, 
+                                                  get_chat_history=lambda h : h,
+                                                  verbose=True
                                                   )
+    
     system_message_prompt_template = """
     You are a security-minded cloud engineer that is an expert in writing AWS CloudFormation templates:
     1) Start by asking which AWS services you're interested in and confirm whether they want the template to be in YAML or JSON. 

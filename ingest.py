@@ -41,7 +41,6 @@ sitemap_urls = [
 
 def extract_urls_from_sitemap(sitemap):
     response = requests.get(sitemap)
-    print (response)
     if response.status_code != 200:
         print(f"Failed to fetch sitemap: {response.status_code}")
         return []
