@@ -3,11 +3,11 @@ import streamlit as st
 from index import conversational_chain
 
 # Custom image for the app icon and the assistant's avatar
-terraform_aws_logo = 'TerraformAWS.png'
+terraform_aws_logo = 'CFNCrafter.png'
 
 # Configure streamlit page
 st.set_page_config(
-    page_title="Your TerraformAWS AI Chatbot",
+    page_title="Your CFN Crafter AI Chatbot",
     page_icon=terraform_aws_logo
 )
 
