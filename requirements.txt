@@ -9,3 +9,7 @@ streamlit
 streamlit_chat
 random
 time
+lxml
+beautifulsoup4
+bs4
+selenium
