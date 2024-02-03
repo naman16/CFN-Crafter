@@ -28,7 +28,7 @@ def conversational_chain():
     # Create memory 'chat_history' 
     memory = ConversationBufferWindowMemory(k=3,memory_key="chat_history")
     # Load the local FAISS index as a retriever
-    vector_store = FAISS.load_local("local_index", embeddings)
+    vector_store = FAISS.load_local("faiss_index", embeddings)
     retriever = vector_store.as_retriever(search_kwargs={"k": 3})
     #retrieved_docs = retriever.get_relevant_documents("can you create cloudformation for rds in YAML")
     #print (retrieved_docs)
