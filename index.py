@@ -15,7 +15,7 @@ from langchain.memory import ConversationBufferWindowMemory
 
 # load OpenAI API key
 load_dotenv() 
-openai_key = os.getenv("OPEN_AI_KEY")
+openai_key = os.getenv("OPENAI_API_KEY")
 
 '''
 The below function initializes and configures a conversational retrieval chain for

@@ -22,7 +22,7 @@ from dotenv import load_dotenv
 
 # load OpenAI API key
 load_dotenv() 
-openai_key = os.getenv("OPEN_AI_KEY")
+openai_key = os.getenv("OPENAI_API_KEY")
 
 # Setup Chrome Driver, may need to change based on system
 service = Service("/usr/bin/chromedriver")
